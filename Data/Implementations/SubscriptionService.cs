@@ -10,9 +10,25 @@ namespace ConversorDeMonedasBack.Data.Implementations
         {
             _context = context;
         }
-        public Subscription GetSubscriptionById(int subscriptionId)
+
+        public List<Subscription> GetAllSubscriptions()
+        {
+            return _context.Subscriptions.Where(s => s.Id != 10).ToList();
+        }
+        public Subscription? GetSubscriptionById(int subscriptionId)
         {
             return _context.Subscriptions.FirstOrDefault(s => s.Id == subscriptionId);
         }
+
+        public int GetSubscriptionAmountOfConversions(int subscriptionId)
+        {
+            Subscription? subscription = GetSubscriptionById(subscriptionId);
+            if (subscription != null)
+            {
+                return subscription.AmountOfConversions;
+            }
+            return 0;
+        }
+
     }
 }

@@ -28,9 +28,9 @@ namespace ConversorDeMonedasBack.Entities
         public ICollection<Currency> Currencies { get; set; } = new List<Currency>();
 
         [ForeignKey("SubscriptionId")]
-        public int SubscriptionId { get; set; } = 1;
+        public int SubscriptionId { get; set; } = 10;
         public Subscription Subscription { get; set; }
-        public ICollection<Conversion> Conversions { get; set; }
+        public ICollection<Conversion> Conversions { get; set; } = new List<Conversion>();
 
         public UserRoleEnum Role { get; set; } = UserRoleEnum.User;
     }

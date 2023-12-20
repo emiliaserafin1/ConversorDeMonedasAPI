@@ -4,6 +4,7 @@ using ConversorDeMonedasBack.Models.Dtos;
 using ConversorDeMonedasBack.Models.Enum;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -36,28 +37,29 @@ namespace ConversorDeMonedasBack.Controllers
         {
             if (userId == 0)
             {
-                return BadRequest("El ID ingresado debe ser distinto de 0");
+                return BadRequest();
             }
 
             User? user = _userService.GetUserById(userId);
+            
             if (user is null)
             {
                 return NotFound();
             }
 
-            var dto = new GetUserByIdResponse()
-            {
-                Id = user.Id,
-                Username = user.Username,
-                Email = user.Email,
-                LastName = user.LastName,
-                FirstName = user.FirstName,
-                SuscriptionId = user.SubscriptionId,
-                Conversions = user.Conversions,
-                Role = user.Role
-            };
+            //var dto = new GetUserByIdResponse()
+            //{
+            //    Id = user.Id,
+            //    Username = user.Username,
+            //    Email = user.Email,
+            //    LastName = user.LastName,
+            //    FirstName = user.FirstName,
+            //    SubscriptionId = user.SubscriptionId,
+            //    Conversions = user.Conversions,
+            //    Role = user.Role
+            //};
 
-            return Ok(dto);
+            return Ok(user);
         }
 
         [HttpPost]
@@ -70,9 +72,14 @@ namespace ConversorDeMonedasBack.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"Error al crear el usuario: {ex.Message}");
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
             }
+            
             return Created("Created", dto);
+
         }
 
         [HttpPut("{userId}")]
@@ -82,23 +89,18 @@ namespace ConversorDeMonedasBack.Controllers
             {
                 return NotFound();
             }
-            string role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-            if (role == "Admin")
+            try
             {
-                try
-                {
-                    _userService.UpdateUser(dto, userId);
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest(ex);
-                }
-                return NoContent();
+                _userService.UpdateUser(dto, userId);
             }
-            return Forbid();
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+            return NoContent();
         }
 
-        [HttpDelete]
+        [HttpDelete("{userId}")]
         public IActionResult DeleteUser(int userId)
         {
             string role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
@@ -120,6 +122,18 @@ namespace ConversorDeMonedasBack.Controllers
             return Forbid();
 
         }
+
+        [HttpPatch("{userId}")]
+        public IActionResult UpdateUserSubscription(int userId, [FromBody] int subscriptionId)
+        {
+            if (subscriptionId == null)
+            {
+                return BadRequest();
+            }
+            _userService.UpdateUserSubscription(userId, subscriptionId);
+            return NoContent();
+        }   
+        
     }
 }
 

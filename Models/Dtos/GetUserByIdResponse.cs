@@ -10,7 +10,7 @@ namespace ConversorDeMonedasBack.Models.Dtos
         public string Email { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public int SuscriptionId { get; set; }
+        public int SubscriptionId { get; set; }
         public ICollection<Conversion> Conversions { get; set; }
         public ICollection<Currency> FavouriteCurrencies { get; set; }
         public UserRoleEnum Role { get; set; }

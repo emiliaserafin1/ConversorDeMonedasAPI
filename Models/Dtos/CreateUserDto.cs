@@ -7,6 +7,7 @@ namespace ConversorDeMonedasBack.Models.Dtos
         [Required]
         public string Username { get; set; }
         [Required]
+        [EmailAddress]
         public string Email { get; set; }
         [Required]
         public string Password { get; set; }
@@ -14,6 +15,5 @@ namespace ConversorDeMonedasBack.Models.Dtos
         public string FirstName { get; set; }
         [Required]
         public string LastName { get; set; }
-        public int SuscriptionId { get; set; }
     }
 }

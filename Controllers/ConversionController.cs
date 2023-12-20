@@ -42,14 +42,18 @@ namespace ConversorDeMonedasBack.Controllers
             // Comparar el ID del usuario autenticado con el ID en la solicitud
             if (authenticatedUserId != requestDto.UserId)
             {
-                return Forbid(); 
+                return Forbid("No esta autorizado"); 
             }
 
-            string subscriptionId = User.Claims.FirstOrDefault(c => c.Type == "subscriptionId")?.Value;
+            User user = _userService.GetUserById(authenticatedUserId);
+            int subscriptionId = user.SubscriptionId;
             int conversionCounter = _conversionService.ConversionCounter(requestDto.UserId);
-            Subscription userSubscription = _subscriptionService.GetSubscriptionById(int.Parse(subscriptionId));
-
-            if (userSubscription != null && conversionCounter < userSubscription.AmountOfConversions)
+            Subscription userSubscription = _subscriptionService.GetSubscriptionById(subscriptionId);
+            if (userSubscription == null) {
+                return BadRequest("Suscripcion no encontrada");
+            }
+            
+            if (conversionCounter < userSubscription.AmountOfConversions)
             {
                 // Recupera las tasas de conversión de las monedas desde la base de datos
                 Currency sourceCurrency = _currencyService.GetCurrencyById(requestDto.SourceCurrencyId);
@@ -82,7 +86,7 @@ namespace ConversorDeMonedasBack.Controllers
                 {
                     return BadRequest($"Error al hacer la conversion: {ex.Message}");
                 }
-                return Ok(createDto.ConvertedAmount);
+                return Ok(convertedAmount);
             }
             return Forbid();
         }

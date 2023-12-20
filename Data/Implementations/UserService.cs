@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using ConversorDeMonedasBack.Models.Dtos;
 using ConversorDeMonedasBack.Models.Enum;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace ConversorDeMonedasBack.Data.Implementations
 {
@@ -35,11 +36,9 @@ namespace ConversorDeMonedasBack.Data.Implementations
                 LastName = dto.LastName,
                 Password = dto.Password,
                 Username = dto.Username,
-                Role = UserRoleEnum.User,
-                SubscriptionId = dto.SuscriptionId,
-                Conversions = new List<Conversion>(),
-                Currencies = new List<Currency>()
+                Role = UserRoleEnum.User
             };
+           
             _context.Users.Add(newUser);
             _context.SaveChanges();
         }
@@ -47,7 +46,7 @@ namespace ConversorDeMonedasBack.Data.Implementations
         //El update funciona de la siguiente manera:
         /*
          * Primero traemos la entidad de la base de datos.
-         * Cuando traemos la entidad entity framework trackea las propiedades del objeto
+         * Cuando traemos la entidad, entity framework trackea las propiedades del objeto
          * Cuando modificamos algo el estado de la entidad pasa a "Modified"
          * Una vez hacemos _context.SaveChanges() esto va a ver que la entidad fue modificada y guarda los cambios en la base de datos.
          */
@@ -57,7 +56,7 @@ namespace ConversorDeMonedasBack.Data.Implementations
             userToUpdate.FirstName = dto.FirstName;   
             userToUpdate.LastName = dto.LastName;
             userToUpdate.Username = dto.Username;
-            userToUpdate.SubscriptionId = dto.SuscriptionId;
+            userToUpdate.SubscriptionId = dto.SubscriptionId;
             _context.SaveChanges();
         }
         public void DeleteUser(int userId)
@@ -70,5 +69,25 @@ namespace ConversorDeMonedasBack.Data.Implementations
             User? user = _context.Users.FirstOrDefault(user => user.Id == userId);
             return user != null;
         }
+
+        public void UpdateUserSubscription(int userId,int subscriptionId)
+        {
+            try
+            {
+                User userToUpdate = _context.Users.FirstOrDefault(u => u.Id == userId);
+
+                if (userToUpdate != null)
+                {
+                    userToUpdate.SubscriptionId = subscriptionId;
+                    _context.SaveChanges();
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                Console.WriteLine($"DbUpdateException: {ex.Message}");
+                Console.WriteLine($"InnerException: {ex.InnerException?.Message}");
+            }
+        }
+
     }
 }

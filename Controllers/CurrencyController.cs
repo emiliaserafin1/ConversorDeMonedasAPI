@@ -90,7 +90,7 @@ namespace ConversorDeMonedasBack.Controllers
             return Forbid();
         }
 
-        [HttpDelete]
+        [HttpDelete("{currencyId}")]
         public IActionResult DeleteCurrency(int currencyId)
         {
             string role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
@@ -107,13 +107,26 @@ namespace ConversorDeMonedasBack.Controllers
             }
             return Forbid();
         }
+        
         #region Monedas Favoritas
         
         [HttpGet("favorite")]
         public IActionResult GetFavoriteCurrencies()
         {
-            int id = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
-            return Ok(_currencyService.GetFavouriteCurrencies(id));
+
+            try
+            {
+                int userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
+                if (userId != null)
+                {
+                    return Ok(_currencyService.GetFavouriteCurrencies(userId));
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+            return BadRequest("La reclamación de identificación del usuario no está presente.");
         }
 
         [HttpPost("favorite/{currencyId}")]

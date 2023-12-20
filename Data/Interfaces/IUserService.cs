@@ -1,5 +1,6 @@
 ﻿using ConversorDeMonedasBack.Entities;
 using ConversorDeMonedasBack.Models.Dtos;
+using Microsoft.AspNetCore.JsonPatch;
 using System.Collections.Generic;
 
 namespace ConversorDeMonedasBack.Data.Interfaces
@@ -13,6 +14,8 @@ namespace ConversorDeMonedasBack.Data.Interfaces
         void UpdateUser(UpdateUserDto dto, int userId);
         void DeleteUser(int userId);
         bool CheckIfUserExists(int userId);
+        void UpdateUserSubscription(int userId, int subscriptionId);
+
     }
 
 }

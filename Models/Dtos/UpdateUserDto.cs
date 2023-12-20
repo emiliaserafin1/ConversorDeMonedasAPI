@@ -12,6 +12,6 @@ namespace ConversorDeMonedasBack.Models.Dtos
         public string FirstName { get; set; }
         [Required]
         public string LastName { get; set; }
-        public int SuscriptionId { get; set; }
+        public int SubscriptionId { get; set; }
     }
 }

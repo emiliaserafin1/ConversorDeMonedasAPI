@@ -60,9 +60,7 @@ namespace ConversorDeMonedasBack.Data.Implementations
         public List<Currency> GetFavouriteCurrencies(int userId)
         {
             // Obtiene el usuario con el id especificado e incluye las monedas favoritas
-            User user = _context.Users
-                .Include(u => u.Currencies)
-                .FirstOrDefault(u => u.Id == userId);
+            User user = _context.Users.Include(u => u.Currencies).FirstOrDefault(u => u.Id == userId);
 
             // Si el usuario no existe o no tiene monedas favoritas, devuelve una lista vacía
             if (user == null || user.Currencies == null)
@@ -79,9 +77,6 @@ namespace ConversorDeMonedasBack.Data.Implementations
                 Value = c.Value
             }).ToList();
         }
-
-
-
 
         public void AddFavouriteCurrency(int currencyId, int userId)
         {
